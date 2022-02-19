@@ -24,8 +24,8 @@ driver = webdriver.Chrome(options=options)
 
 #driver = webdriver.Chrome('/Users/user/PycharmProjects/CCTB_class/chromedriver')
 #s = Service(executable_path="/Users/user/PycharmProjects/CCTB_class/chromedriver")
-s = Service(executable_path='./chromedriver')
-driver = webdriver.Chrome(service=s)
+#s = Service(executable_path='./chromedriver')
+#driver = webdriver.Chrome(service=s)
 
 # Fixture method - to open web browser
 def setup():
