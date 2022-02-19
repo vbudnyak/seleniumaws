@@ -1,14 +1,15 @@
 import sys
 import datetime
+import pytest
 import moodle_locators as locators
 from time import sleep
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select
+from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.options import Options
 
-options = Options()
 options = Options()
 options.add_argument("--headless")
 options.add_argument("window-size=1400,1500")
@@ -19,10 +20,12 @@ options.add_argument("enable-automation")
 options.add_argument("--disable-infobars")
 options.add_argument("--disable-dev-shm-usage")
 
-#driver = webdriver.Chrome('/Users/user/PycharmProjects/CCTB_class/chromedriver')
-#s =Service(executable_path="/Users/user/PycharmProjects/CCTB_class/chromedriver")
-#s = Service(executable_path='./chromedriver')
 driver = webdriver.Chrome(options=options)
+
+#driver = webdriver.Chrome('/Users/user/PycharmProjects/CCTB_class/chromedriver')
+#s = Service(executable_path="/Users/user/PycharmProjects/CCTB_class/chromedriver")
+s = Service(executable_path='./chromedriver')
+driver = webdriver.Chrome(service=s)
 
 # Fixture method - to open web browser
 def setup():
@@ -44,13 +47,13 @@ def setup():
         driver.close()
         driver.quit()
 
-def log_in():
+def log_in(username, password):
     if driver.current_url == locators.moodle_url:
         driver.find_element(By.LINK_TEXT, 'Log in').click()
         if driver.current_url == locators.moodle_login_url:
-            driver.find_element(By.ID, 'username').send_keys(locators.moodle_username)
+            driver.find_element(By.ID, 'username').send_keys(username)
             sleep(0.25)
-            driver.find_element(By.ID, 'password').send_keys(locators.moodle_password)
+            driver.find_element(By.ID, 'password').send_keys(password)
             sleep(0.25)
             driver.find_element(By.ID, 'loginbtn').click()
             if driver.title == 'Dashboard' and driver.current_url == locators.moodle_dashboard_url:
@@ -136,34 +139,34 @@ def create_new_user():
         sleep(0.25)
         driver.find_element(By.XPATH, "//div[3]/input").send_keys(Keys.ENTER)
 
-        # Click by Optional link to open that section
-        driver.find_element(By.XPATH, "//a[text() = 'Optional']").click()
-        sleep(0.25)
-        # Fill out the web page input open field
-        driver.find_element(By.CSS_SELECTOR, "input#id_url").send_keys(locators.web_page_url)
-        driver.find_element(By.CSS_SELECTOR, "input#id_icq").send_keys(locators.icq_number)
-        driver.find_element(By.CSS_SELECTOR, "input#id_skype").send_keys(locators.icq_number)
-        driver.find_element(By.CSS_SELECTOR, "input#id_aim").send_keys(locators.icq_number)
-        driver.find_element(By.CSS_SELECTOR, "input#id_yahoo").send_keys(locators.icq_number)
-        driver.find_element(By.CSS_SELECTOR, "input#id_msn").send_keys(locators.icq_number)
-        driver.find_element(By.CSS_SELECTOR, "input#id_idnumber").send_keys(locators.icq_number)
-        driver.find_element(By.CSS_SELECTOR, "input#id_institution").send_keys(locators.institution)
-        driver.find_element(By.CSS_SELECTOR, "input#id_department").send_keys(locators.department)
-        driver.find_element(By.CSS_SELECTOR, "input#id_phone1").send_keys(locators.phone)
-        driver.find_element(By.CSS_SELECTOR, "input#id_phone2").send_keys(locators.mobile_phone)
-        driver.find_element(By.CSS_SELECTOR, "input#id_address").send_keys(locators.address)
-        # Click "Create user" button
-        driver.find_element(By.ID, "id_submitbutton").click()
-        sleep(0.25)
-        print(f"Test scenario: Create a new user {locators.new_username} --- is passed")
-sleep(0.25)
+    # Click by Optional link to open that section
+    driver.find_element(By.XPATH, "//a[text() = 'Optional']").click()
+    sleep(0.25)
+    # Fill out the web page input open field
+    driver.find_element(By.CSS_SELECTOR, "input#id_url").send_keys(locators.web_page_url)
+    driver.find_element(By.CSS_SELECTOR, "input#id_icq").send_keys(locators.icq_number)
+    driver.find_element(By.CSS_SELECTOR, "input#id_skype").send_keys(locators.icq_number)
+    driver.find_element(By.CSS_SELECTOR, "input#id_aim").send_keys(locators.icq_number)
+    driver.find_element(By.CSS_SELECTOR, "input#id_yahoo").send_keys(locators.icq_number)
+    driver.find_element(By.CSS_SELECTOR, "input#id_msn").send_keys(locators.icq_number)
+    driver.find_element(By.CSS_SELECTOR, "input#id_idnumber").send_keys(locators.icq_number)
+    driver.find_element(By.CSS_SELECTOR, "input#id_institution").send_keys(locators.institution)
+    driver.find_element(By.CSS_SELECTOR, "input#id_department").send_keys(locators.department)
+    driver.find_element(By.CSS_SELECTOR, "input#id_phone1").send_keys(locators.phone)
+    driver.find_element(By.CSS_SELECTOR, "input#id_phone2").send_keys(locators.mobile_phone)
+    driver.find_element(By.CSS_SELECTOR, "input#id_address").send_keys(locators.address)
+    # Click "Create user" button
+    driver.find_element(By.ID, "id_submitbutton").click()
+    sleep(0.25)
+    print(f"Test scenario: Create a new user {locators.new_username} --- is passed")
+
 
 def check_user_created():
     # Check that we are on the User's Main Page
     if driver.current_url == locators.moodle_users_main_page:
         assert driver.find_element(By.XPATH, "//h1[text() = 'Software Quality Assurance Testing']").is_displayed()
         sleep(0.25)
-        if driver.find_element(By.ID, "fgroup_id_email_grp_label") and driver.find_element(By.NAME, "email"):
+        if driver.find_element(By.ID, 'fgroup_id_email_grp_label') and driver.find_element(By.NAME, 'email'):
             sleep(0.25)
             driver.find_element(By.CSS_SELECTOR, 'input#id_email').send_keys(locators.email)
             sleep(0.25)
@@ -180,7 +183,7 @@ def check_we_logged_in_with_new_cred():
             print(f'--- User with the name {locators.full_name} is displayed. Test Passed ---')
 
 
-def delete_new_user():
+def delete_test_user():
     driver.find_element(By.XPATH, '//span[contains(., "Site administration")]').click()
     sleep(0.25)
     assert driver.find_element(By.LINK_TEXT, 'Users').is_displayed()
@@ -212,30 +215,30 @@ def log_out():
     if driver.current_url == locators.moodle_url:
         print(f'Log out successfully at: {datetime.datetime.now()}')
 
-#def teardown():
-#    if driver is not None:
-#        print(f"---------------------------------")
-#        print(f"Test Completed at: {datetime.datetime.now()}")
-#        driver.close()
-#        driver.quit()
-#        #Make a log file with dynamic fake values
-#        old_instance = sys.stdout
-#        log_file = open("message.log", "w")
-#        sys.stdout = log_file
-#        print(f"Email: {locators.email} \nUsername: {locators.new_username}\nPassword: {locators.new_password}\n"
-#              f"FullName: {locators.full_name}")
-#        sys.stdout = old_instance
-#        log_file.close()
+def teardown():
+   if driver is not None:
+       print(f"---------------------------------")
+       print(f"Test Completed at: {datetime.datetime.now()}")
+       driver.close()
+       driver.quit()
+       #Make a log file with dynamic fake values
+       old_instance = sys.stdout
+       log_file = open("message.log", "w")
+       sys.stdout = log_file
+       print(f"Email: {locators.email} \nUsername: {locators.new_username}\nPassword: {locators.new_password}\n"
+             f"FullName: {locators.full_name}")
+       sys.stdout = old_instance
+       log_file.close()
 
 
-setup()
-#teardown()
-log_in()
-create_new_user()
-check_user_created()
-log_out()
-log_in()
-check_we_logged_in_with_new_cred()
-log_out()
-log_in()
-delete_new_user()
+# setup()
+# #teardown()
+# log_in()
+# create_new_user()
+# check_user_created()
+# log_out()
+# log_in()
+# check_we_logged_in_with_new_cred()
+# log_out()
+# log_in()
+# delete_test_user()
